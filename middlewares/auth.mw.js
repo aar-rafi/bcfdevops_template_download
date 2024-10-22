@@ -27,6 +27,7 @@ const auth = async (req, res, next) => {
         req.user = user;
 
         next();
+        // eslint-disable-next-line no-unused-vars
     } catch (e) {
         // console.error(e);
         return res.status(401).send({ error: 'Unauthorized' });
