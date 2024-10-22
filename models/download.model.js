@@ -1,18 +1,18 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const downloadSchema = mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
+    {
+        name: {
+            type: String,
+            required: true,
+        },
+        downloaded: {
+            type: Number,
+        },
     },
-    downloaded: {
-      type: Number,
-    },
-  },
-  {
-    timestamps: true,
-  }
+    {
+        timestamps: true,
+    }
 );
 
-export const Downloads = mongoose.model("Downloads", downloadSchema);
+export const Downloads = mongoose.model('Downloads', downloadSchema);

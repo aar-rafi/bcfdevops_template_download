@@ -1,6 +1,6 @@
-import app from "./app.js";
+import app from './app.js';
 const PORT = 8002;
 
-app.listen(PORT, (req, res) => {
-  console.log(`DFSA server is running at http://localhost:${PORT}`);
+app.listen(PORT, () => {
+    console.log(`DFSA server is running at http://localhost:${PORT}`);
 });

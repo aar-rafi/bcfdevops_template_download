@@ -11,6 +11,6 @@ client
     .setKey(process.env.APPWRITE_API_KEY);
 
 const databases = new sdk.Databases(client);
-console.log("Appwrite database connected");
+console.log('Appwrite database connected');
 
-export {sdk, client, databases};
+export { sdk, client, databases };

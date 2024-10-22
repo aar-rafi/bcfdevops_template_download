@@ -1,127 +1,127 @@
 name: Node.js CI/CD
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main, develop]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
+        strategy:
+            matrix:
+                node-version: [18.x, 20.x]
 
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        
-    - name: Cache node modules
-      uses: actions/cache@v4
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-          
-    - name: Cache build outputs
-      uses: actions/cache@v4
-      with:
-        path: |
-          dist
-          build
-          .next
-        key: ${{ runner.os }}-build-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-build-
-          
-    - name: Install dependencies
-      id: install
-      run: npm ci
-      continue-on-error: true
+        steps:
+            - uses: actions/checkout@v4
 
-    - name: Run linter
-      id: lint
-      if: steps.install.outcome == 'success'
-      run: npm run lint
-      continue-on-error: true
-      
-    - name: Run tests
-      id: test
-      if: steps.lint.outcome == 'success'
-      run: npm test
-      continue-on-error: true
-      
-    - name: Build
-      id: build
-      if: steps.test.outcome == 'success'
-      run: npm run build
-      continue-on-error: true
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
 
-    # Determine job status and failed step
-    - name: Set status outputs
-      id: status
-      run: |
-        if [ "${{ steps.install.outcome }}" == "failure" ]; then
-          echo "failed_step=npm install" >> $GITHUB_OUTPUT
-        elif [ "${{ steps.lint.outcome }}" == "failure" ]; then
-          echo "failed_step=lint" >> $GITHUB_OUTPUT
-        elif [ "${{ steps.test.outcome }}" == "failure" ]; then
-          echo "failed_step=tests" >> $GITHUB_OUTPUT
-        elif [ "${{ steps.build.outcome }}" == "failure" ]; then
-          echo "failed_step=build" >> $GITHUB_OUTPUT
-        else
-          echo "failed_step=none" >> $GITHUB_OUTPUT
-        fi
+            - name: Cache node modules
+              uses: actions/cache@v4
+              with:
+                  path: ~/.npm
+                  key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                  restore-keys: |
+                      ${{ runner.os }}-node-
 
-    # Slack Notifications
-    - name: Notify Slack on Failure
-      if: |
-        steps.install.outcome == 'failure' ||
-        steps.lint.outcome == 'failure' ||
-        steps.test.outcome == 'failure' ||
-        steps.build.outcome == 'failure'
-      uses: slackapi/slack-github-action@v1.25.0
-      with:
-        channel-id: 'C07T2BHGWQ4'
-        slack-message: |
-          🚨 Workflow failed on ${{ github.repository }}
-          Branch: ${{ github.ref }}
-          Commit: ${{ github.sha }}
-          Author: ${{ github.actor }}
-          Failed Step: ${{ steps.status.outputs.failed_step }}
-          
-          Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+            - name: Cache build outputs
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      dist
+                      build
+                      .next
+                  key: ${{ runner.os }}-build-${{ github.sha }}
+                  restore-keys: |
+                      ${{ runner.os }}-build-
 
-    - name: Notify Slack on Success
-      if: |
-        steps.install.outcome == 'success' &&
-        steps.lint.outcome == 'success' &&
-        steps.test.outcome == 'success' &&
-        steps.build.outcome == 'success'
-      uses: slackapi/slack-github-action@v1.25.0
-      with:
-        channel-id: 'C07T2BHGWQ4'
-        slack-message: |
-          ✅ Workflow succeeded on ${{ github.repository }}
-          Branch: ${{ github.ref }}
-          Commit: ${{ github.sha }}
-          Author: ${{ github.actor }}
-          
-          All steps completed successfully:
-          ✓ npm install
-          ✓ lint
-          ✓ tests
-          ✓ build
-          
-          Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+            - name: Install dependencies
+              id: install
+              run: npm ci
+              continue-on-error: true
+
+            - name: Run linter
+              id: lint
+              if: steps.install.outcome == 'success'
+              run: npm run lint
+              continue-on-error: true
+
+            - name: Run tests
+              id: test
+              if: steps.lint.outcome == 'success'
+              run: npm test
+              continue-on-error: true
+
+            - name: Build
+              id: build
+              if: steps.test.outcome == 'success'
+              run: npm run build
+              continue-on-error: true
+
+            # Determine job status and failed step
+            - name: Set status outputs
+              id: status
+              run: |
+                  if [ "${{ steps.install.outcome }}" == "failure" ]; then
+                    echo "failed_step=npm install" >> $GITHUB_OUTPUT
+                  elif [ "${{ steps.lint.outcome }}" == "failure" ]; then
+                    echo "failed_step=lint" >> $GITHUB_OUTPUT
+                  elif [ "${{ steps.test.outcome }}" == "failure" ]; then
+                    echo "failed_step=tests" >> $GITHUB_OUTPUT
+                  elif [ "${{ steps.build.outcome }}" == "failure" ]; then
+                    echo "failed_step=build" >> $GITHUB_OUTPUT
+                  else
+                    echo "failed_step=none" >> $GITHUB_OUTPUT
+                  fi
+
+            # Slack Notifications
+            - name: Notify Slack on Failure
+              if: |
+                  steps.install.outcome == 'failure' ||
+                  steps.lint.outcome == 'failure' ||
+                  steps.test.outcome == 'failure' ||
+                  steps.build.outcome == 'failure'
+              uses: slackapi/slack-github-action@v1.25.0
+              with:
+                  channel-id: 'C07T2BHGWQ4'
+                  slack-message: |
+                      🚨 Workflow failed on ${{ github.repository }}
+                      Branch: ${{ github.ref }}
+                      Commit: ${{ github.sha }}
+                      Author: ${{ github.actor }}
+                      Failed Step: ${{ steps.status.outputs.failed_step }}
+
+                      Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              env:
+                  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+            - name: Notify Slack on Success
+              if: |
+                  steps.install.outcome == 'success' &&
+                  steps.lint.outcome == 'success' &&
+                  steps.test.outcome == 'success' &&
+                  steps.build.outcome == 'success'
+              uses: slackapi/slack-github-action@v1.25.0
+              with:
+                  channel-id: 'C07T2BHGWQ4'
+                  slack-message: |
+                      ✅ Workflow succeeded on ${{ github.repository }}
+                      Branch: ${{ github.ref }}
+                      Commit: ${{ github.sha }}
+                      Author: ${{ github.actor }}
+
+                      All steps completed successfully:
+                      ✓ npm install
+                      ✓ lint
+                      ✓ tests
+                      ✓ build
+
+                      Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+              env:
+                  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
