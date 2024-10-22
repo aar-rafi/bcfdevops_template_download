@@ -33,3 +33,40 @@ export default [
 ```bash
 npx eslint
 ```
+
+## prettier setup
+
+```bash
+npm i --save-dev --save-exact prettier
+```
+
+#### create a `.prettierrc` file
+
+```json
+{
+    "printWidth": 80,
+    "tabWidth": 4,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "arrowParens": "avoid",
+    "endOfLine": "auto"
+}
+```
+
+#### and a `.prettierignore` file
+
+```
+node_modules
+dist
+coverage
+build
+```
+
+#### run prettier command
+
+```bash
+npx prettier --write .
+```
