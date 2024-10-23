@@ -1,6 +1,7 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { mongodbURL } from '../config.js';
+import {connectToMongoDB} from './config.js'
 
 const baseURL = 'https://district12.xyz/down';
 const authBaseURL = 'https://district12.xyz/auth';
@@ -10,7 +11,8 @@ describe('API Endpoint Tests', () => {
 
     beforeAll(async () => {
         // Connect to MongoDB before running the tests
-        await mongoose.connect(mongodbURL, { dbName: 'dfsa' });
+        // await mongoose.connect(mongodbURL, { dbName: 'dfsa' });
+        await connectToMongoDB('dfsa');
 
         // Perform login to retrieve webToken
         const validLoginUser = {
