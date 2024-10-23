@@ -12,7 +12,7 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [18.x, 20.x]
+                node-version: [18.x, 22.x]
 
         steps:
             - uses: actions/checkout@v4
@@ -62,8 +62,6 @@ jobs:
                     echo "failed_step=lint" >> $GITHUB_OUTPUT
                   elif [ "${{ steps.test.outcome }}" == "failure" ]; then
                     echo "failed_step=tests" >> $GITHUB_OUTPUT
-                  elif [ "${{ steps.build.outcome }}" == "failure" ]; then
-                    echo "failed_step=build" >> $GITHUB_OUTPUT
                   else
                     echo "failed_step=none" >> $GITHUB_OUTPUT
                   fi
@@ -73,8 +71,7 @@ jobs:
               if: |
                   steps.install.outcome == 'failure' ||
                   steps.lint.outcome == 'failure' ||
-                  steps.test.outcome == 'failure' ||
-                  steps.build.outcome == 'failure'
+                  steps.test.outcome == 'failure' 
               uses: slackapi/slack-github-action@v1.25.0
               with:
                   channel-id: 'C07T2BHGWQ4'
@@ -93,8 +90,7 @@ jobs:
               if: |
                   steps.install.outcome == 'success' &&
                   steps.lint.outcome == 'success' &&
-                  steps.test.outcome == 'success' &&
-                  steps.build.outcome == 'success'
+                  steps.test.outcome == 'success'
               uses: slackapi/slack-github-action@v1.25.0
               with:
                   channel-id: 'C07T2BHGWQ4'
@@ -108,7 +104,6 @@ jobs:
                       ✓ npm install
                       ✓ lint
                       ✓ tests
-                      ✓ build
 
                       Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
               env:
