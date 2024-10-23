@@ -1,7 +1,7 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
 // import { mongodbURL } from '../config.js';
-import {connectToMongoDB} from './config.js'
+import {connectToMongoDB} from '../config.js'
 
 const baseURL = 'https://district12.xyz/down';
 const authBaseURL = 'https://district12.xyz/auth';
