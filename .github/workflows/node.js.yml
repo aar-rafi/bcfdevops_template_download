@@ -56,6 +56,11 @@ jobs:
               id: test
               if: steps.lint.outcome == 'success'
               run: npm test
+              env:
+                MONGODB_USERNAME : ${{ secrets.MONGODB_USERNAME}}
+                MONGODB_PASSWORD : ${{ secrets.MONGODB_PASSWORD}}
+                MONGODB_CLUSTER_NAME : ${{ secrets.MONGODB_CLUSTER_NAME}}
+                MONGODB_APP_NAME : ${{ secrets.MONGODB_APP_NAME}}
               continue-on-error: true
 
             - name: Build
