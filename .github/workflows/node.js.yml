@@ -30,17 +30,6 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-node-
 
-            - name: Cache build outputs
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      dist
-                      build
-                      .next
-                  key: ${{ runner.os }}-build-${{ github.sha }}
-                  restore-keys: |
-                      ${{ runner.os }}-build-
-
             - name: Install dependencies
               id: install
               run: npm ci
@@ -61,12 +50,6 @@ jobs:
                 MONGODB_PASSWORD : ${{ secrets.MONGODB_PASSWORD }}
                 MONGODB_CLUSTER_NAME : ${{ secrets.MONGODB_CLUSTER_NAME }}
                 MONGODB_APP_NAME : ${{ secrets.MONGODB_APP_NAME }}
-              continue-on-error: true
-
-            - name: Build
-              id: build
-              if: steps.test.outcome == 'success'
-              run: npm run build
               continue-on-error: true
 
             # Determine job status and failed step
