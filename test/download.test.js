@@ -1,18 +1,39 @@
 import request from 'supertest';
-// import app from "../app.js";
 import mongoose from 'mongoose';
 import { mongodbURL } from '../config.js';
 
-const baseURL = 'https://district12.xyz/auth';
+const baseURL = 'https://district12.xyz/down';
+const authBaseURL = 'https://district12.xyz/auth';
 
 describe('API Endpoint Tests', () => {
+    let webToken;
+
     beforeAll(async () => {
         // Connect to MongoDB before running the tests
         await mongoose.connect(mongodbURL, { dbName: 'dfsa' });
+
+        // Perform login to retrieve webToken
+        const validLoginUser = {
+            name: 'Jon Snow',
+            password: 'jon',
+        };
+
+        const loginResponse = await request(authBaseURL)
+            .post('/api/user/login')
+            .send(validLoginUser);
+
+        expect(loginResponse.statusCode).toBe(201);
+        expect(loginResponse.body).toHaveProperty('webToken');
+
+        webToken = loginResponse.body.webToken;
     });
 
     const postDownloadRequest = userData =>
-        request(baseURL).post('/api/download/make').send(userData);
+        request(baseURL)
+            .post('/api/download/make')
+            .set('Content-Type', 'application/json')
+            .set('Authorization', `Bearer ${webToken}`)
+            .send(userData);
 
     it('should return success message for POST /api/download/make with valid name', async () => {
         const validUser = {
