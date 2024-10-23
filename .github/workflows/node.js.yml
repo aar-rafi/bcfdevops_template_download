@@ -45,7 +45,14 @@ jobs:
               id: install
               run: npm ci
               continue-on-error: true
-
+             # Set up .env variables using secrets
+            - name: Set up .env variables
+              run: |
+                  echo "MONGODB_USERNAME=${{ secrets.MONGODB_USERNAME }}" >> .env
+                  echo "MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}" >> .env
+                  echo "MONGODB_CLUSTER_NAME=${{ secrets.MONGODB_CLUSTER_NAME }}" >> .env
+                  echo "MONGODB_APP_NAME=${{ secrets.MONGODB_APP_NAME }}" >> .env
+            
             - name: Run linter
               id: lint
               if: steps.install.outcome == 'success'
